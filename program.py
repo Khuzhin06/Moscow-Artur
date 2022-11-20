@@ -1,6 +1,6 @@
 def main():
     print('My first git program')
-    a = 1
+    a = 12
     b = 2
     print(a + b)
 
