@@ -20,7 +20,7 @@ def main():
         pygame.draw.ellipse(
             screen,
             pygame.Color('white'),
-            (0, i * step, 300, w),
+            (123, i * step, 300, w),
             width=1
         )
         w -= step * 2
