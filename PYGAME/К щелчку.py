@@ -9,16 +9,19 @@ def draw_circle(screen, center, radius=20):
 
 def run(screen, v, x, y, x_pos, y_pos):
     while x != x_pos and y != y_pos:
+        clock = pygame.time.Clock()
         screen.fill('black')
         if x > x_pos:
             x_pos += v / FPS
         if y > y_pos:
-            x_pos += v / FPS
+            y_pos += v / FPS
         if x < x_pos:
             x_pos -= v / FPS
         if y < y_pos:
-            x_pos -= v / FPS
+            y_pos -= v / FPS
         draw_circle(screen, (x_pos, y_pos))
+        pygame.display.flip()
+        clock.tick(FPS)
 
 def main():
     x_pos = y_pos = 250
