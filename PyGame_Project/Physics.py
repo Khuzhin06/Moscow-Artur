@@ -1,7 +1,7 @@
 import pygame
 from random import choice
 
-FPS = 20  # количество кадров в секунду
+FPS = 50  # количество кадров в секунду
 SIZE = WIDTH, HEIGHT = 800, 400
 
 
@@ -49,7 +49,7 @@ class Board:
                     (x + self.cell_size - 8, 328),
                     width=2
                 )
-            if self.board[col] == 'w':
+            if self.board[col] == 's':
                 pygame.draw.line(
                     screen,
                     'yellow',
@@ -64,7 +64,7 @@ class Board:
                     (x + self.cell_size // 2, 392),
                     width=2
                 )
-            if self.board[col] == 's':
+            if self.board[col] == 'w':
                 pygame.draw.line(
                     screen,
                     'green',
@@ -94,6 +94,18 @@ class Board:
                     (x + 8, 328),
                     width=2
                 )
+            if self.board[col] == 'Yes':
+                pygame.draw.rect(
+                    screen,
+                    'green',
+                    (x, 320, 80, 80),
+                )
+            elif self.board[col] == 'No':
+                pygame.draw.rect(
+                    screen,
+                    'red',
+                    (x, 320, 80, 80),
+                )
 
     def turn_left(self):
         choi = choice(['a', 'w', 'd', 's'])
@@ -102,6 +114,10 @@ class Board:
 
     def click(self, a):
         print(a)
+        if a == self.board[0]:
+            self.board[0] = 'Yes'
+        elif self.board[0] != 0 and self.board[0] != 'Yes':
+            self.board[0] = 'No'
 
 
 def main():
@@ -111,17 +127,24 @@ def main():
     clock = pygame.time.Clock()
     running = True
     turn = 0  # Нужно для подсчета скорости движения стрелок
-    turn_end = 1
 
     # поле 5 на 7
     board = Board(10)
     board.set_view(0, 320, 80)
-    board.turn_left()
+    TURN_BOARD_EVENT = pygame.USEREVENT + 1
+    TURN_BOARD_TIMER = 1000
+    pygame.time.set_timer(TURN_BOARD_EVENT, TURN_BOARD_TIMER)
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
                 break
+            if event.type == TURN_BOARD_EVENT:
+                board.turn_left()
+                TURN_BOARD_TIMER -= 30
+                if TURN_BOARD_TIMER <= 200:
+                    TURN_BOARD_TIMER = 200
+                pygame.time.set_timer(TURN_BOARD_EVENT, TURN_BOARD_TIMER)
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
@@ -133,10 +156,6 @@ def main():
         elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
             board.click('s')
 
-        turn = turn % FPS + 1
-        if FPS / turn == 1:
-            board.turn_left()
-            turn_end += 1
         screen.fill('black')
         board.render(screen)
         pygame.display.flip()
@@ -147,3 +166,4 @@ if __name__ == '__main__':
     pygame.init()
     main()
     pygame.quit()
+
