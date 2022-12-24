@@ -1,7 +1,7 @@
 import pygame
 from random import choice
 
-FPS = 20  # количество кадров в секунду
+FPS = 50  # количество кадров в секунду
 SIZE = WIDTH, HEIGHT = 800, 400
 
 
@@ -116,9 +116,8 @@ class Board:
         print(a)
         if a == self.board[0]:
             self.board[0] = 'Yes'
-        elif self.board[0] != 0 and self.board[0] != 'Yes' and self.board[0] != 'No':
+        elif self.board[0] != 0 and self.board[0] != 'Yes':
             self.board[0] = 'No'
-            self.live -= 1
 
 
 def main():
@@ -132,13 +131,20 @@ def main():
     # поле 5 на 7
     board = Board(10)
     board.set_view(0, 320, 80)
-    board.turn_left()
-    end = 1
+    TURN_BOARD_EVENT = pygame.USEREVENT + 1
+    TURN_BOARD_TIMER = 1000
+    pygame.time.set_timer(TURN_BOARD_EVENT, TURN_BOARD_TIMER)
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
                 break
+            if event.type == TURN_BOARD_EVENT:
+                board.turn_left()
+                TURN_BOARD_TIMER -= 30
+                if TURN_BOARD_TIMER <= 200:
+                    TURN_BOARD_TIMER = 200
+                pygame.time.set_timer(TURN_BOARD_EVENT, TURN_BOARD_TIMER)
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
@@ -150,13 +156,6 @@ def main():
         elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
             board.click('s')
 
-        turn = turn % FPS + 1
-        if FPS / turn == 1:  # был тут end вместо 1
-            board.turn_left()
-            # end += 1
-
-        if not board.live:
-            running = False
         screen.fill('black')
         board.render(screen)
         pygame.display.flip()
